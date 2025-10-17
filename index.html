@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego del Ahorcado</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        background: #333;
+        color: #fff;
+        margin: 0;
+        padding: 20px;
+    }
+    #palabra {
+        font-size: 2em;
+        letter-spacing: 8px;
+        margin: 30px 0;
+    }
+    #letras {
+        margin-top: 20px;
+    }
+    button.letra {
+        margin: 5px;
+        padding: 10px 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button.letra:disabled {
+        background: #bbb;
+        cursor: not-allowed;
+    }
+    #mensaje {
+        font-size: 1.5em;
+        margin-top: 20px;
+        color: #333;
+    }
+    #reiniciar {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        background: #008cba;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    canvas {
+        background: #fff;
+        margin-top: 20px;
+        border: 1px solid #ccc;
+    }
+</style>
+</head>
+<body>
+<h1>🎯 Juego del Ahorcado</h1>
+
+<canvas id="ahorcado" width="200" height="200"></canvas>
+<div id="palabra"></div>
+<div id="letras"></div>
+<div id="mensaje"></div>
+<button id="reiniciar" style="display:none;">Jugar de nuevo</button>
+
+<script>
+const palabras = ["PROGRAMAR", "JAVASCRIPT", "AHORCADO", "HTML", "CSS", "NAVEGADOR", "COMPUTADORA"];
+let palabraSecreta = "";
+let letrasCorrectas = [];
+let errores = 0;
+const maxErrores = 6;
+
+const palabraEl = document.getElementById("palabra");
+const letrasEl = document.getElementById("letras");
+const mensajeEl = document.getElementById("mensaje");
+const reiniciarBtn = document.getElementById("reiniciar");
+const canvas = document.getElementById("ahorcado");
+const ctx = canvas.getContext("2d");
+
+function iniciarJuego() {
+    palabraSecreta = palabras[Math.floor(Math.random() * palabras.length)];
+    letrasCorrectas = [];
+    errores = 0;
+    mensajeEl.textContent = "";
+    reiniciarBtn.style.display = "none";
+    dibujarAhorcado();
+    mostrarPalabra();
+    mostrarLetras();
+}
+
+function mostrarPalabra() {
+    palabraEl.textContent = palabraSecreta.split("").map(letra => 
+        letrasCorrectas.includes(letra) ? letra : "_"
+    ).join(" ");
+}
+
+function mostrarLetras() {
+    letrasEl.innerHTML = "";
+    for (let i = 65; i <= 90; i++) {
+        const letra = String.fromCharCode(i);
+        const btn = document.createElement("button");
+        btn.textContent = letra;
+        btn.classList.add("letra");
+        btn.addEventListener("click", () => manejarLetra(letra, btn));
+        letrasEl.appendChild(btn);
+    }
+}
+
+function manejarLetra(letra, boton) {
+    boton.disabled = true;
+    if (palabraSecreta.includes(letra)) {
+        letrasCorrectas.push(letra);
+        mostrarPalabra();
+        verificarVictoria();
+    } else {
+        errores++;
+        dibujarAhorcado();
+        verificarDerrota();
+    }
+}
+
+function verificarVictoria() {
+    if (palabraSecreta.split("").every(letra => letrasCorrectas.includes(letra))) {
+        mensajeEl.textContent = "🎉 ¡Ganaste! La palabra era " + palabraSecreta;
+        finalizarJuego();
+    }
+}
+
+function verificarDerrota() {
+    if (errores >= maxErrores) {
+        mensajeEl.textContent = "💀 Perdiste. La palabra era " + palabraSecreta;
+        finalizarJuego();
+    }
+}
+
+function finalizarJuego() {
+    document.querySelectorAll(".letra").forEach(btn => btn.disabled = true);
+    reiniciarBtn.style.display = "inline-block";
+}
+
+reiniciarBtn.addEventListener("click", iniciarJuego);
+
+// Dibujo del ahorcado
+function dibujarAhorcado() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#333";
+    
+    // Base
+    ctx.beginPath();
+    ctx.moveTo(10, 190);
+    ctx.lineTo(190, 190);
+    ctx.moveTo(50, 190);
+    ctx.lineTo(50, 20);
+    ctx.lineTo(120, 20);
+    ctx.lineTo(120, 40);
+    ctx.stroke();
+
+    if (errores > 0) { // cabeza
+        ctx.beginPath();
+        ctx.arc(120, 55, 15, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    if (errores > 1) { // cuerpo
+        ctx.beginPath();
+        ctx.moveTo(120, 70);
+        ctx.lineTo(120, 120);
+        ctx.stroke();
+    }
+    if (errores > 2) { // brazo izq
+        ctx.beginPath();
+        ctx.moveTo(120, 80);
+        ctx.lineTo(100, 100);
+        ctx.stroke();
+    }
+    if (errores > 3) { // brazo der
+        ctx.beginPath();
+        ctx.moveTo(120, 80);
+        ctx.lineTo(140, 100);
+        ctx.stroke();
+    }
+    if (errores > 4) { // pierna izq
+        ctx.beginPath();
+        ctx.moveTo(120, 120);
+        ctx.lineTo(100, 150);
+        ctx.stroke();
+    }
+    if (errores > 5) { // pierna der
+        ctx.beginPath();
+        ctx.moveTo(120, 120);
+        ctx.lineTo(140, 150);
+        ctx.stroke();
+    }
+}
+
+iniciarJuego();
+</script>
+</body>
+</html>
