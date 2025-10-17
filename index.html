@@ -1,231 +1,209 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juego del Ahorcado</title>
+<style>
     body {
-      background: #1e1e1e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: #f5f5f5;
+        color: #333;
+        text-align: center;
+        margin: 0;
+        padding: 0;
     }
-
-    .calculadora {
-      background: #2b2b2b;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      width: 320px;
+    h1 {
+        background: #333;
+        color: #fff;
+        margin: 0;
+        padding: 20px;
     }
-
-    .pantalla {
-      width: 100%;
-      height: 70px;
-      background: #000;
-      color: #0f0;
-      text-align: right;
-      font-size: 2em;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow: hidden;
+    #palabra {
+        font-size: 2em;
+        letter-spacing: 8px;
+        margin: 30px 0;
     }
-
-    .botones {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+    #letras {
+        margin-top: 20px;
     }
-
-    button {
-      background: #444;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 1.2em;
-      padding: 15px;
-      cursor: pointer;
-      transition: background 0.2s;
+    button.letra {
+        margin: 5px;
+        padding: 10px 15px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        background: #333;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s;
     }
-
-    button:hover {
-      background: #666;
+    button.letra:disabled {
+        background: #bbb;
+        cursor: not-allowed;
     }
-
-    .igual {
-      background: #0a84ff;
-      grid-column: span 2;
+    #mensaje {
+        font-size: 1.5em;
+        margin-top: 20px;
+        color: #333;
     }
-
-    .igual:hover {
-      background: #0077e6;
+    #reiniciar {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        background: #008cba;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
     }
-
-    .borrar {
-      background: #ff3b30;
-    }<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculadora</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+    canvas {
+        background: #fff;
+        margin-top: 20px;
+        border: 1px solid #ccc;
     }
-
-    body {
-      background: #1e1e1e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .calculadora {
-      background: #2b2b2b;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      width: 320px;
-    }
-
-    .pantalla {
-      width: 100%;
-      height: 70px;
-      background: #000;
-      color: #0f0;
-      text-align: right;
-      font-size: 2em;
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      overflow: hidden;
-    }
-
-    .botones {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    button {
-      background: #444;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 1.2em;
-      padding: 15px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    button:hover {
-      background: #666;
-    }
-
-    .igual {
-      background: #0a84ff;
-      grid-column: span 2;
-    }
-
-    .igual:hover {
-      background: #0077e6;
-    }
-
-    .borrar {
-      background: #ff3b30;
-    }
-
-    .borrar:hover {
-      background: #e32b22;
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div class="calculadora">
-    <div id="pantalla" class="pantalla">0</div>
-    <div class="botones">
-      <button class="borrar" onclick="borrar()">C</button>
-      <button onclick="agregar('/')">÷</button>
-      <button onclick="agregar('*')">×</button>
-      <button onclick="borrarUltimo()">⌫</button>
+<h1>🎯 Juego del Ahorcado</h1>
 
-      <button onclick="agregar('7')">7</button>
-      <button onclick="agregar('8')">8</button>
-      <button onclick="agregar('9')">9</button>
-      <button onclick="agregar('-')">−</button>
+<canvas id="ahorcado" width="200" height="200"></canvas>
+<div id="palabra"></div>
+<div id="letras"></div>
+<div id="mensaje"></div>
+<button id="reiniciar" style="display:none;">Jugar de nuevo</button>
 
-      <button onclick="agregar('4')">4</button>
-      <button onclick="agregar('5')">5</button>
-      <button onclick="agregar('6')">6</button>
-      <button onclick="agregar('+')">+</button>
+<script>
+const palabras = ["PROGRAMAR", "JAVASCRIPT", "AHORCADO", "HTML", "CSS", "NAVEGADOR", "COMPUTADORA"];
+let palabraSecreta = "";
+let letrasCorrectas = [];
+let errores = 0;
+const maxErrores = 6;
 
-      <button onclick="agregar('1')">1</button>
-      <button onclick="agregar('2')">2</button>
-      <button onclick="agregar('3')">3</button>
-      <button class="igual" onclick="calcular()">=</button>
+const palabraEl = document.getElementById("palabra");
+const letrasEl = document.getElementById("letras");
+const mensajeEl = document.getElementById("mensaje");
+const reiniciarBtn = document.getElementById("reiniciar");
+const canvas = document.getElementById("ahorcado");
+const ctx = canvas.getContext("2d");
 
-      <button onclick="agregar('0')">0</button>
-      <button onclick="agregar('.')">.</button>
-    </div>
-  </div>
+function iniciarJuego() {
+    palabraSecreta = palabras[Math.floor(Math.random() * palabras.length)];
+    letrasCorrectas = [];
+    errores = 0;
+    mensajeEl.textContent = "";
+    reiniciarBtn.style.display = "none";
+    dibujarAhorcado();
+    mostrarPalabra();
+    mostrarLetras();
+}
 
-  <script>
-    const pantalla = document.getElementById("pantalla");
-    let expresion = "";
+function mostrarPalabra() {
+    palabraEl.textContent = palabraSecreta.split("").map(letra => 
+        letrasCorrectas.includes(letra) ? letra : "_"
+    ).join(" ");
+}
 
-    function agregar(valor) {
-      if (pantalla.innerText === "0" && valor !== ".") {
-        expresion = "";
-      }
-      expresion += valor;
-      pantalla.innerText = expresion;
+function mostrarLetras() {
+    letrasEl.innerHTML = "";
+    for (let i = 65; i <= 90; i++) {
+        const letra = String.fromCharCode(i);
+        const btn = document.createElement("button");
+        btn.textContent = letra;
+        btn.classList.add("letra");
+        btn.addEventListener("click", () => manejarLetra(letra, btn));
+        letrasEl.appendChild(btn);
     }
+}
 
-    function borrar() {
-      expresion = "";
-      pantalla.innerText = "0";
+function manejarLetra(letra, boton) {
+    boton.disabled = true;
+    if (palabraSecreta.includes(letra)) {
+        letrasCorrectas.push(letra);
+        mostrarPalabra();
+        verificarVictoria();
+    } else {
+        errores++;
+        dibujarAhorcado();
+        verificarDerrota();
     }
+}
 
-    function borrarUltimo() {
-      expresion = expresion.slice(0, -1);
-      pantalla.innerText = expresion || "0";
+function verificarVictoria() {
+    if (palabraSecreta.split("").every(letra => letrasCorrectas.includes(letra))) {
+        mensajeEl.textContent = "🎉 ¡Ganaste! La palabra era " + palabraSecreta;
+        finalizarJuego();
     }
+}
 
-    function calcular() {
-      try {
-        const resultado = eval(expresion);
-        pantalla.innerText = resultado;
-        expresion = resultado.toString();
-      } catch {
-        pantalla.innerText = "Error";
-        expresion = "";
-      }
+function verificarDerrota() {
+    if (errores >= maxErrores) {
+        mensajeEl.textContent = "💀 Perdiste. La palabra era " + palabraSecreta;
+        finalizarJuego();
     }
-  </script>
+}
+
+function finalizarJuego() {
+    document.querySelectorAll(".letra").forEach(btn => btn.disabled = true);
+    reiniciarBtn.style.display = "inline-block";
+}
+
+reiniciarBtn.addEventListener("click", iniciarJuego);
+
+// Dibujo del ahorcado
+function dibujarAhorcado() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#333";
+    
+    // Base
+    ctx.beginPath();
+    ctx.moveTo(10, 190);
+    ctx.lineTo(190, 190);
+    ctx.moveTo(50, 190);
+    ctx.lineTo(50, 20);
+    ctx.lineTo(120, 20);
+    ctx.lineTo(120, 40);
+    ctx.stroke();
+
+    if (errores > 0) { // cabeza
+        ctx.beginPath();
+        ctx.arc(120, 55, 15, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    if (errores > 1) { // cuerpo
+        ctx.beginPath();
+        ctx.moveTo(120, 70);
+        ctx.lineTo(120, 120);
+        ctx.stroke();
+    }
+    if (errores > 2) { // brazo izq
+        ctx.beginPath();
+        ctx.moveTo(120, 80);
+        ctx.lineTo(100, 100);
+        ctx.stroke();
+    }
+    if (errores > 3) { // brazo der
+        ctx.beginPath();
+        ctx.moveTo(120, 80);
+        ctx.lineTo(140, 100);
+        ctx.stroke();
+    }
+    if (errores > 4) { // pierna izq
+        ctx.beginPath();
+        ctx.moveTo(120, 120);
+        ctx.lineTo(100, 150);
+        ctx.stroke();
+    }
+    if (errores > 5) { // pierna der
+        ctx.beginPath();
+        ctx.moveTo(120, 120);
+        ctx.lineTo(140, 150);
+        ctx.stroke();
+    }
+}
+
+iniciarJuego();
+</script>
 </body>
 </html>
-
-
-    .borrar:hover {
-      background: #e32b22;
-    }
-  </style>
-</head>
-<body>
-  <div class="calculadora">
-    <div id="pantalla" class="pantalla">0</div>
-    <div class="botones">
-      <button class="borrar" o
